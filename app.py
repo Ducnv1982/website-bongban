@@ -1,0 +1,86 @@
+from flask import Flask, render_template, request
+
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+import re  # Thư viện để kiểm tra định dạng email
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    error = None  # Biến để lưu thông báo lỗi
+    if request.method == "POST":
+        # Lấy dữ liệu từ form
+        name = request.form["name"].strip()
+        email = request.form["email"].strip()
+        phone = request.form["phone"].strip()
+
+        # Kiểm tra dữ liệu nhập
+        if not name:
+            error = "Họ và tên không được để trống."
+        elif not re.match(r"[^@]+@[^@]+\.[^@]+", email):  # Kiểm tra định dạng email
+            error = "Email không hợp lệ. Vui lòng nhập đúng định dạng email."
+        elif not phone.isdigit():  # Kiểm tra số điện thoại chỉ chứa số
+            error = "Số điện thoại chỉ được chứa các chữ số."
+        else:
+            # Lưu vào cơ sở dữ liệu
+            try:
+                conn = sqlite3.connect("users.db")  # Kết nối đến cơ sở dữ liệu
+                cursor = conn.cursor()
+                cursor.execute("""
+                    INSERT INTO users (name, email, phone)
+                    VALUES (?, ?, ?)
+                """, (name, email, phone))  # Thêm dữ liệu vào bảng
+                conn.commit()
+                conn.close()
+
+                # Trả về thông báo đăng ký thành công
+                return f"<h1>Đăng ký thành công!</h1><p>Họ và tên: {name}</p><p>Email: {email}</p><p>Số điện thoại: {phone}</p>"
+
+            except sqlite3.IntegrityError:
+                # Thông báo lỗi nếu email đã tồn tại
+                error = "Email đã tồn tại. Vui lòng sử dụng email khác."
+
+    # Nếu có lỗi, hiển thị thông báo lỗi
+    return render_template("register.html", error=error)
+
+
+import sqlite3
+# Kết nối với cơ sở dữ liệu và tạo bảng nếu chưa tồn tại
+def init_db():
+    conn = sqlite3.connect("users.db")  # Kết nối đến file users.db
+    cursor = conn.cursor()
+
+    # Tạo bảng users nếu chưa tồn tại
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        email TEXT NOT NULL UNIQUE,
+        phone TEXT NOT NULL
+    )
+    """)
+    conn.commit()  # Lưu thay đổi vào cơ sở dữ liệu
+    conn.close()   # Đóng kết nối
+
+# Gọi hàm tạo cơ sở dữ liệu khi khởi động ứng dụng
+init_db()
+
+@app.route("/users")
+def users():
+    # Kết nối cơ sở dữ liệu
+    conn = sqlite3.connect("users.db")
+    cursor = conn.cursor()
+
+    # Lấy tất cả dữ liệu trong bảng users
+    cursor.execute("SELECT * FROM users")
+    users = cursor.fetchall()  # Lấy tất cả các hàng trong bảng
+    conn.close()
+
+    # Truyền dữ liệu người dùng vào file HTML
+    return render_template("users.html", users=users)
+
+if __name__ == "__main__":
+    app.run(debug=True)

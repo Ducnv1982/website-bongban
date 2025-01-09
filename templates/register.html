@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký tài khoản</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Đăng ký tài khoản</h1>
+    {% if error %}
+    <p style="color: red; text-align: center;">{{ error }}</p>
+    {% endif %}
+    <form method="POST" action="/register" style="max-width: 400px; margin: auto;">
+        <label for="name">Họ và tên:</label><br>
+        <input type="text" id="name" name="name" required style="width: 100%; padding: 10px; margin-bottom: 10px;"><br>
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email" required style="width: 100%; padding: 10px; margin-bottom: 10px;"><br>
+        <label for="phone">Số điện thoại:</label><br>
+        <input type="text" id="phone" name="phone" required style="width: 100%; padding: 10px; margin-bottom: 10px;"><br>
+        <button type="submit" style="width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 5px;">Đăng ký</button>
+    </form>
+</body>
+</html>
