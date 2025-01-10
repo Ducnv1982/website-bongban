@@ -3,34 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Danh sách người dùng</title>
+    <title>Danh sách thành viên</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1 style="text-align: center;">Danh sách người dùng đã đăng ký</h1>
-    <table border="1" style="width: 80%; margin: auto; border-collapse: collapse; text-align: center;">
+    <h1>Danh sách thành viên</h1>
+    <table border="1" style="width: 100%; border-collapse: collapse; text-align: left;">
         <thead>
-            <tr style="background-color: #007bff; color: white;">
-                <th>ID</th>
+            <tr>
                 <th>Họ và tên</th>
                 <th>Email</th>
                 <th>Số điện thoại</th>
+                <th>Ngày gia nhập</th>
+                <th>Điểm Elo</th>
+                <th>Số trận đấu</th>
+                <th>Tỉ lệ Thắng/Hòa/Thua</th>
+                <th>Trận gần nhất</th>
+                <th>Phân hạng</th>
             </tr>
         </thead>
         <tbody>
             {% for user in users %}
             <tr>
-                <td>{{ user[0] }}</td>
-                <td>{{ user[1] }}</td>
-                <td>{{ user[2] }}</td>
-                <td>{{ user[3] }}</td>
+                <td>{{ user.name }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.phone }}</td>
+                <td>{{ user.join_date }}</td>
+                <td>{{ user.elo }}</td>
+                <td>{{ user.matches_played }}</td>
+                <td>{{ user.win_rate }}</td>
+                <td>{{ user.last_match }}</td>
+                <td>{{ user.rank }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-    <div style="text-align: center; margin-top: 20px;">
-        <a href="/" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Quay về trang chủ</a>
-    </div>
-    
 </body>
 </html>

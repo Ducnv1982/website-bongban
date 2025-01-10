@@ -70,17 +70,36 @@ init_db()
 
 @app.route("/users")
 def users():
-    # Kết nối cơ sở dữ liệu
+    # Kết nối cơ sở dữ liệu SQLite
     conn = sqlite3.connect("users.db")
     cursor = conn.cursor()
 
-    # Lấy tất cả dữ liệu trong bảng users
-    cursor.execute("SELECT * FROM users")
-    users = cursor.fetchall()  # Lấy tất cả các hàng trong bảng
+    # Lấy tất cả dữ liệu từ bảng users với các trường từ Table 2
+    cursor.execute("""
+        SELECT name, email, phone, join_date, elo, matches_played, win_rate, last_match, rank
+        FROM users
+    """)
+    # Chuyển dữ liệu thành danh sách từ điển để dễ xử lý trong template
+    users = [
+        {
+            "name": row[0],
+            "email": row[1],
+            "phone": row[2],
+            "join_date": row[3],
+            "elo": row[4],
+            "matches_played": row[5],
+            "win_rate": row[6],
+            "last_match": row[7],
+            "rank": row[8],
+        }
+        for row in cursor.fetchall()
+    ]
+
     conn.close()
 
-    # Truyền dữ liệu người dùng vào file HTML
+    # Truyền dữ liệu người dùng vào template
     return render_template("users.html", users=users)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
